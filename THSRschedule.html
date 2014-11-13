@@ -1,0 +1,3422 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset= 'utf8'>
+		<title>THSR schedule</title>
+		<script src= 'https://code.jquery.com/jquery-1.11.1.min.js'></script>
+		<script>
+			var result= [];
+			function display(){
+				var str= 
+				'<table>'+
+					'<thead>'+
+						'<tr><th>discount</th><th>no.</th><th>左營</th><th>台南</th><th>嘉義</th><th>台中</th><th>新竹</th><th>桃園</th><th>板橋</th><th>台北</th></tr>'+
+					'</thead>'+
+					'<tbody>' ;
+				$.each(result, function(i, val){
+					str+= 
+					'<tr>';
+					if(val.discount== 7)
+						str+='<td bgcolor="#85CE1F">'+val.discount+'</td>';
+					else
+						str+='<td bgcolor="#62BCEC">'+val.discount+'</td>';
+					str+='<td>'+val.no+'</td><td>'+val.a+'</td><td>'+val.b+'</td><td>'+val.c+'</td><td>'+val.d+'</td><td>'+val.e+'</td><td>'+val.f+'</td><td>'+val.g+'</td><td>'+val.h+'</td></tr>'
+				});
+				str+= 
+					'</tbody>'+
+				'</table>';
+				$('#result').html(str);
+			}
+			function compute(start, end, opsition, wd){
+				console.log('start station: '+start+'-------end station: '+end+'-------opsition: '+(opsition> 0? '北上':'南下')+'-------星期: '+wd);
+				result= [];
+				var sTable= special? '#sscTable': '#scTable';
+				if(opsition> 0){
+					//north
+					//table:eq(1, 3)
+					function searchN(eq){
+						$(sTable+' table:eq('+eq+') tbody tr').each(function(i){
+							if(i> 0){
+								var nth= i== 1? 1: 0;
+								var days= $(this).find('td:nth-child('+(2+nth)+')').text().replace('日', '7').replace('一', '1').replace('二', '2').replace('三', '3').replace('四', '4').replace('五', '5').replace('六', '6');
+								var dayStr= '';
+								var temp1= days.split('、');
+								$.each(temp1, function(i, val){
+									var temp2= temp1[i].split('～');
+									if(temp2.length> 1){
+										for(var i= temp2[0]; i<= temp2[1]; i++){
+											dayStr+= i;
+										}
+									}
+									else{
+										dayStr+= temp2[0];
+									}
+								});
+								var discount= eq== 1? 5: 7;
+								for(var i= 0; i< dayStr.length; i++){
+									if(dayStr.charAt(i)== wd){
+										var startTime= $(this).find('td:nth-child('+(+start+3+nth)+')').html();
+										var endTime= $(this).find('td:nth-child('+(+end+3+nth)+')').html();
+										console.log('start: '+startTime+'//end: '+endTime);
+										if(startTime!= '&nbsp;' && startTime!= '─' && endTime!= '&nbsp;' && endTime!= '─'){
+											result.push({
+												no: $(this).find('td:nth-child('+(1+nth)+')').text(), 
+												a: $(this).find('td:nth-child('+(3+nth)+')').text(), 
+												b: $(this).find('td:nth-child('+(4+nth)+')').text(), 
+												c: $(this).find('td:nth-child('+(5+nth)+')').text(), 
+												d: $(this).find('td:nth-child('+(6+nth)+')').text(), 
+												e: $(this).find('td:nth-child('+(7+nth)+')').text(), 
+												f: $(this).find('td:nth-child('+(8+nth)+')').text(), 
+												g: $(this).find('td:nth-child('+(9+nth)+')').text(), 
+												h: $(this).find('td:nth-child('+(10+nth)+')').text(), 
+												discount: discount
+											});
+										}
+									}
+								}
+							}
+						});
+					}
+					searchN(1);
+					searchN(3);
+				}
+				else{
+					//south
+					//table:eq(0), table:eq(2)
+					function searchS(eq){
+						$(sTable+' table:eq('+eq+') tbody tr').each(function(i){
+							if(i> 0){
+								var nth= i== 1? 1: 0;
+								var days= $(this).find('td:nth-child('+(2+nth)+')').text().replace('日', '7').replace('一', '1').replace('二', '2').replace('三', '3').replace('四', '4').replace('五', '5').replace('六', '6');
+								var dayStr= '';
+								var temp1= days.split('、');
+								$.each(temp1, function(i, val){
+									var temp2= temp1[i].split('～');
+									if(temp2.length> 1){
+										for(var i= temp2[0]; i<= temp2[1]; i++){
+											dayStr+= i;
+										}
+									}
+									else{
+										dayStr+= temp2[0];
+									}
+								});
+								var discount= eq== 0? 5: 7;
+								for(var i= 0; i< dayStr.length; i++){
+									if(dayStr.charAt(i)== wd){
+										var startTime= $(this).find('td:nth-child('+(10-start+nth)+')').html();
+										var endTime= $(this).find('td:nth-child('+(10-end+nth)+')').html();
+										console.log('start: '+startTime+'//end: '+endTime);
+										if(startTime!= '&nbsp;' && startTime!= '─' && endTime!= '&nbsp;' && endTime!= '─'){
+											result.push({
+												no: $(this).find('td:nth-child('+(1+nth)+')').text(), 
+												h: $(this).find('td:nth-child('+(3+nth)+')').text(), 
+												g: $(this).find('td:nth-child('+(4+nth)+')').text(), 
+												f: $(this).find('td:nth-child('+(5+nth)+')').text(), 
+												e: $(this).find('td:nth-child('+(6+nth)+')').text(), 
+												d: $(this).find('td:nth-child('+(7+nth)+')').text(), 
+												c: $(this).find('td:nth-child('+(8+nth)+')').text(), 
+												b: $(this).find('td:nth-child('+(9+nth)+')').text(), 
+												a: $(this).find('td:nth-child('+(10+nth)+')').text(), 
+												discount: discount
+											});
+										}
+									}
+								}
+							}
+						});
+					}
+					searchS(0);
+					searchS(2);
+				}
+				display();
+				console.log(result);
+			}
+			$(document).ready(function(){
+				$('#chooseDate').change(function(){
+					var arr= $(this).val().split('-'), 
+						y= arr[0], 
+						m= arr[1], 
+						d= arr[2];
+					var date= new Date(y, m-1, d);
+					wd= date.getDay();
+					wd= wd== 0? 7: wd;
+					if(m==11 && d==28 || d==29 || d==30)
+						special= true;
+					else if(m==12 && d==1)
+						special= true;
+					else
+						special= false;
+				});
+				var arr= ['左營', '台南', '嘉義', '台中', '新竹', '桃園', '板橋', '台北'];
+				$.each(arr, function(i, val){
+					$('#from').append('<option value= '+i+'>'+val+'</option>');
+				});
+				$('#from').change(function(){
+					from= $(this).val();
+					if(from== '-1'){
+						return;
+					}
+					$('#destination').html('<option val= "-1">to</option>');
+					$.each(arr, function(i, val){
+						if(i== from){
+							return;
+						}
+						$('#destination').append('<option value= '+i+'>'+val+'</option>');
+					});
+				});
+				$('#destination').change(function(){
+					destination= $(this).val();
+					if(destination== '-1'){
+						return;
+					}
+					var diff= destination- from;
+					console.log(destination+' - '+from+' = '+diff);
+					compute(from, destination, diff, wd);
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<input id= 'chooseDate' type= 'date' max= '2014-12-30' min= '2014-09-01'><br>
+		<select id= 'from'>
+			<option value= '-1'>from</option>
+		</select>
+		<select id= 'destination'>
+			<option value= '-1'>to</option>
+		</select>
+		<div id= 'result'></div>
+		<span style= 'position: fixed; bottom: 2px; left: 2px'>適用車次: 2014/9/1~2014/12/30(含2014/11/28~2014/12/1選舉疏運適用車次) &copy; 2014 ChaNg Y.Y.</span>
+
+		<table id= 'scTable' style= 'display: none'>
+			<tr>
+				<!-- get from THSR -->
+				<td valign="top">
+					<table border="0" cellpadding="0" cellspacing="1" class="timetable" style="font-size:14px;" width="100%">
+						<caption style="display:none">指定5折車次表(南下)</caption>
+						<tbody>
+							<tr class="Head">
+								<th bgcolor="#FF6602" width="50"><span style="color:#000000;"><span style="font-size:14px;">方向</span></span></th>
+								<th bgcolor="#FF6602" style="padding:3px 0px" width="50"><span style="color:#000000;"><span style="font-size:14px;">車次</span></span></th>
+								<th bgcolor="#FF6602" width="120"><span style="color:#000000;"><span style="font-size:14px;">適用日</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台北</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">板橋</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">桃園</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">新竹</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台中</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">嘉義</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台南</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">左營</span></span></th>
+							</tr>
+							<tr class="NDtd">
+								<th bgcolor="#85CE1F" class="SD" rowspan="32"><span style="color:#000000;"><span style="font-size:14px;">南下</span></span></th>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">551</td>
+								<td bgcolor="#EEF7E6">一～日</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">06:30</td>
+								<td bgcolor="#EEF7E6">06:57</td>
+								<td bgcolor="#EEF7E6">07:17</td>
+								<td bgcolor="#EEF7E6">07:30</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1505</td>
+								<td>一～五</td>
+								<td>07:18</td>
+								<td>07:26</td>
+								<td>07:39</td>
+								<td>07:51</td>
+								<td>08:16</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">1615</td>
+								<td bgcolor="#EEF7E6">二、三</td>
+								<td bgcolor="#EEF7E6">07:48</td>
+								<td bgcolor="#EEF7E6">07:56</td>
+								<td bgcolor="#EEF7E6">08:09</td>
+								<td bgcolor="#EEF7E6">08:22</td>
+								<td bgcolor="#EEF7E6">08:50</td>
+								<td bgcolor="#EEF7E6">09:14</td>
+								<td bgcolor="#EEF7E6">09:33</td>
+								<td bgcolor="#EEF7E6">09:48</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1627</td>
+								<td>一～四</td>
+								<td>09:18</td>
+								<td>09:26</td>
+								<td>09:39</td>
+								<td>09:51</td>
+								<td>10:19</td>
+								<td>10:44</td>
+								<td>11:03</td>
+								<td>11:18</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">629</td>
+								<td bgcolor="#EEF7E6">一～四</td>
+								<td bgcolor="#EEF7E6">09:36</td>
+								<td bgcolor="#EEF7E6">09:44</td>
+								<td bgcolor="#EEF7E6">09:57</td>
+								<td bgcolor="#EEF7E6">10:10</td>
+								<td bgcolor="#EEF7E6">10:38</td>
+								<td bgcolor="#EEF7E6">11:02</td>
+								<td bgcolor="#EEF7E6">11:21</td>
+								<td bgcolor="#EEF7E6">11:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">1635</td>
+								<td>日</td>
+								<td>10:18</td>
+								<td>10:26</td>
+								<td>10:39</td>
+								<td>10:51</td>
+								<td>11:19</td>
+								<td>11:44</td>
+								<td>12:03</td>
+								<td>12:18</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">135</td>
+								<td bgcolor="#EEF7E6">日</td>
+								<td bgcolor="#EEF7E6">10:30</td>
+								<td bgcolor="#EEF7E6">10:38</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">11:22</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">12:06</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">637</td>
+								<td>日</td>
+								<td>10:36</td>
+								<td>10:44</td>
+								<td>10:57</td>
+								<td>11:10</td>
+								<td>11:38</td>
+								<td>12:02</td>
+								<td>12:21</td>
+								<td>12:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">1521</td>
+								<td bgcolor="#EEF7E6">五</td>
+								<td bgcolor="#EEF7E6">15:18</td>
+								<td bgcolor="#EEF7E6">15:26</td>
+								<td bgcolor="#EEF7E6">15:39</td>
+								<td bgcolor="#EEF7E6">15:51</td>
+								<td bgcolor="#EEF7E6">16:16</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">1525</td>
+								<td>一</td>
+								<td>17:18</td>
+								<td>17:26</td>
+								<td>17:39</td>
+								<td>17:51</td>
+								<td>18:16</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">1529</td>
+								<td bgcolor="#EEF7E6">一～四</td>
+								<td bgcolor="#EEF7E6">18:48</td>
+								<td bgcolor="#EEF7E6">18:56</td>
+								<td bgcolor="#EEF7E6">19:09</td>
+								<td bgcolor="#EEF7E6">19:22</td>
+								<td bgcolor="#EEF7E6">19:49</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">239</td>
+								<td>一</td>
+								<td>18:54</td>
+								<td>19:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>20:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">741</td>
+								<td bgcolor="#EEF7E6">一</td>
+								<td bgcolor="#EEF7E6">19:00</td>
+								<td bgcolor="#EEF7E6">19:08</td>
+								<td bgcolor="#EEF7E6">19:21</td>
+								<td bgcolor="#EEF7E6">19:33</td>
+								<td bgcolor="#EEF7E6">20:01</td>
+								<td bgcolor="#EEF7E6">20:26</td>
+								<td bgcolor="#EEF7E6">20:47</td>
+								<td bgcolor="#EEF7E6">21:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">753</td>
+								<td>六</td>
+								<td>20:36</td>
+								<td>20:44</td>
+								<td>20:57</td>
+								<td>21:10</td>
+								<td>21:38</td>
+								<td>22:02</td>
+								<td>22:21</td>
+								<td>22:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">255</td>
+								<td bgcolor="#EEF7E6">一～四、六</td>
+								<td bgcolor="#EEF7E6">20:54</td>
+								<td bgcolor="#EEF7E6">21:02</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">21:46</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">22:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">757</td>
+								<td>二</td>
+								<td>21:00</td>
+								<td>21:08</td>
+								<td>21:21</td>
+								<td>21:33</td>
+								<td>22:01</td>
+								<td>22:26</td>
+								<td>22:45</td>
+								<td>23:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">259</td>
+								<td bgcolor="#EEF7E6">二</td>
+								<td bgcolor="#EEF7E6">21:30</td>
+								<td bgcolor="#EEF7E6">21:38</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">22:22</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">23:06</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">761</td>
+								<td>一～三</td>
+								<td>21:36</td>
+								<td>21:44</td>
+								<td>21:57</td>
+								<td>22:10</td>
+								<td>22:38</td>
+								<td>23:02</td>
+								<td>23:21</td>
+								<td>23:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">763</td>
+								<td bgcolor="#EEF7E6">一～四</td>
+								<td bgcolor="#EEF7E6">21:54</td>
+								<td bgcolor="#EEF7E6">22:02</td>
+								<td bgcolor="#EEF7E6">22:15</td>
+								<td bgcolor="#EEF7E6">22:27</td>
+								<td bgcolor="#EEF7E6">22:55</td>
+								<td bgcolor="#EEF7E6">23:20</td>
+								<td bgcolor="#EEF7E6">23:39</td>
+								<td bgcolor="#EEF7E6">23:54</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">399</td>
+								<td>一～四</td>
+								<td>22:12</td>
+								<td>─</td>
+								<td>22:31</td>
+								<td>─</td>
+								<td>23:04</td>
+								<td>23:28</td>
+								<td>23:46</td>
+								<td>23:59</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">541</td>
+								<td bgcolor="#EEF7E6">一～四</td>
+								<td bgcolor="#EEF7E6">22:30</td>
+								<td bgcolor="#EEF7E6">22:38</td>
+								<td bgcolor="#EEF7E6">22:52</td>
+								<td bgcolor="#EEF7E6">23:03</td>
+								<td bgcolor="#EEF7E6">23:30</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">545</td>
+								<td>一～四、日</td>
+								<td>23:00</td>
+								<td>23:08</td>
+								<td>23:22</td>
+								<td>23:33</td>
+								<td>23:59</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<table border="0" cellpadding="0" cellspacing="1" class="timetable" style="font-size:14px;" width="100%">
+						<caption style="display:none">指定5折車次表(北上)</caption>
+						<tbody>
+							<tr class="Head">
+								<th bgcolor="#FF6602" width="50"><span style="color:#000000;"><span style="font-size:14px;">方向</span></span></th>
+								<th bgcolor="#FF6602" style="padding:3px 0px" width="50"><span style="color:#000000;"><span style="font-size:14px;">車次</span></span></th>
+								<th bgcolor="#FF6602" width="120"><span style="color:#000000;"><span style="font-size:14px;">適用日</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">左營</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台南</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">嘉義</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台中</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">新竹</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">桃園</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">板橋</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台北</span></span></th>
+							</tr>
+							<tr>
+								<th bgcolor="#62BCEC" class="ND" rowspan="23"><span style="color:#000000;"><span style="font-size:14px;">北上</span></span></th>
+								<td style="padding:3px 0px">1508</td>
+								<td>三～五</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>07:12</td>
+								<td>07:39</td>
+								<td>07:51</td>
+								<td>08:05</td>
+								<td>08:12</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">604</td>
+								<td bgcolor="#E3F4FC">日</td>
+								<td bgcolor="#E3F4FC">06:36</td>
+								<td bgcolor="#E3F4FC">06:51</td>
+								<td bgcolor="#E3F4FC">07:11</td>
+								<td bgcolor="#E3F4FC">07:37</td>
+								<td bgcolor="#E3F4FC">08:04</td>
+								<td bgcolor="#E3F4FC">08:16</td>
+								<td bgcolor="#E3F4FC">08:29</td>
+								<td bgcolor="#E3F4FC">08:36</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1512</td>
+								<td>二～五</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>08:19</td>
+								<td>08:46</td>
+								<td>08:58</td>
+								<td>09:11</td>
+								<td>09:18</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1618</td>
+								<td bgcolor="#E3F4FC">日</td>
+								<td bgcolor="#E3F4FC">08:18</td>
+								<td bgcolor="#E3F4FC">08:33</td>
+								<td bgcolor="#E3F4FC">08:54</td>
+								<td bgcolor="#E3F4FC">09:19</td>
+								<td bgcolor="#E3F4FC">09:46</td>
+								<td bgcolor="#E3F4FC">09:58</td>
+								<td bgcolor="#E3F4FC">10:11</td>
+								<td bgcolor="#E3F4FC">10:18</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">620</td>
+								<td>日</td>
+								<td>08:36</td>
+								<td>08:49</td>
+								<td>09:09</td>
+								<td>09:35</td>
+								<td>10:03</td>
+								<td>10:16</td>
+								<td>10:29</td>
+								<td>10:36</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1516</td>
+								<td bgcolor="#E3F4FC">六</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">10:19</td>
+								<td bgcolor="#E3F4FC">10:46</td>
+								<td bgcolor="#E3F4FC">10:58</td>
+								<td bgcolor="#E3F4FC">11:11</td>
+								<td bgcolor="#E3F4FC">11:18</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">130</td>
+								<td>二～四</td>
+								<td>09:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:22</td>
+								<td>11:30</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">632</td>
+								<td bgcolor="#E3F4FC">二～四</td>
+								<td bgcolor="#E3F4FC">10:00</td>
+								<td bgcolor="#E3F4FC">10:15</td>
+								<td bgcolor="#E3F4FC">10:36</td>
+								<td bgcolor="#E3F4FC">11:01</td>
+								<td bgcolor="#E3F4FC">11:28</td>
+								<td bgcolor="#E3F4FC">11:40</td>
+								<td bgcolor="#E3F4FC">11:53</td>
+								<td bgcolor="#E3F4FC">12:00</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">134</td>
+								<td>二～四</td>
+								<td>10:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:58</td>
+								<td>12:06</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1526</td>
+								<td bgcolor="#E3F4FC">一、二、日</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">16:52</td>
+								<td bgcolor="#E3F4FC">17:21</td>
+								<td bgcolor="#E3F4FC">17:34</td>
+								<td bgcolor="#E3F4FC">17:47</td>
+								<td bgcolor="#E3F4FC">17:54</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1530</td>
+								<td>五</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>18:49</td>
+								<td>19:15</td>
+								<td>19:27</td>
+								<td>19:40</td>
+								<td>19:48</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">238</td>
+								<td bgcolor="#E3F4FC">一～三</td>
+								<td bgcolor="#E3F4FC">18:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">19:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">20:22</td>
+								<td bgcolor="#E3F4FC">20:30</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">744</td>
+								<td>一～四</td>
+								<td>19:36</td>
+								<td>19:49</td>
+								<td>20:09</td>
+								<td>20:35</td>
+								<td>21:03</td>
+								<td>21:16</td>
+								<td>21:29</td>
+								<td>21:36</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">246</td>
+								<td bgcolor="#E3F4FC">一～四</td>
+								<td bgcolor="#E3F4FC">19:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">20:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">21:22</td>
+								<td bgcolor="#E3F4FC">21:30</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">748</td>
+								<td>一～四</td>
+								<td>20:00</td>
+								<td>20:15</td>
+								<td>20:36</td>
+								<td>21:01</td>
+								<td>21:28</td>
+								<td>21:40</td>
+								<td>21:53</td>
+								<td>22:00</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1750</td>
+								<td bgcolor="#E3F4FC">六</td>
+								<td bgcolor="#E3F4FC">20:18</td>
+								<td bgcolor="#E3F4FC">20:33</td>
+								<td bgcolor="#E3F4FC">20:54</td>
+								<td bgcolor="#E3F4FC">21:19</td>
+								<td bgcolor="#E3F4FC">21:46</td>
+								<td bgcolor="#E3F4FC">21:58</td>
+								<td bgcolor="#E3F4FC">22:11</td>
+								<td bgcolor="#E3F4FC">22:18</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">752</td>
+								<td>二～四、六</td>
+								<td>20:36</td>
+								<td>20:49</td>
+								<td>21:09</td>
+								<td>21:35</td>
+								<td>22:03</td>
+								<td>22:16</td>
+								<td>22:29</td>
+								<td>22:36</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">254</td>
+								<td bgcolor="#E3F4FC">二～四</td>
+								<td bgcolor="#E3F4FC">20:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">21:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">22:22</td>
+								<td bgcolor="#E3F4FC">22:30</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">756</td>
+								<td>二、三</td>
+								<td>21:00</td>
+								<td>21:15</td>
+								<td>21:36</td>
+								<td>22:01</td>
+								<td>22:28</td>
+								<td>22:40</td>
+								<td>22:53</td>
+								<td>23:00</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">762</td>
+								<td bgcolor="#E3F4FC">一～六</td>
+								<td bgcolor="#E3F4FC">21:54</td>
+								<td bgcolor="#E3F4FC">22:09</td>
+								<td bgcolor="#E3F4FC">22:30</td>
+								<td bgcolor="#E3F4FC">22:55</td>
+								<td bgcolor="#E3F4FC">23:22</td>
+								<td bgcolor="#E3F4FC">23:34</td>
+								<td bgcolor="#E3F4FC">23:47</td>
+								<td bgcolor="#E3F4FC">23:54</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">334</td>
+								<td>一～六</td>
+								<td>22:12</td>
+								<td>22:25</td>
+								<td>22:45</td>
+								<td>23:10</td>
+								<td>─</td>
+								<td>─</td>
+								<td>23:53</td>
+								<td>23:59</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">596</td>
+								<td bgcolor="#E3F4FC">一～日</td>
+								<td bgcolor="#E3F4FC">23:00</td>
+								<td bgcolor="#E3F4FC">23:15</td>
+								<td bgcolor="#E3F4FC">23:35</td>
+								<td bgcolor="#E3F4FC">23:59</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+					&nbsp;
+
+					<p style="font-size:18px; font-weight:bold;"><span style="color:#000000;"><span style="font-size:20px;">指定</span></span><strong><span style="color:#FF0000;"><span style="font-size:20px;">7</span></span></strong><span style="color:#000000;"><span style="font-size:20px;">折車次表</span></span></p>
+
+					<table border="0" cellpadding="0" cellspacing="1" class="timetable" style="font-size:13px;" width="100%">
+						<caption style="display:none">指定7折車次表(南下)</caption>
+						<tbody>
+							<tr class="Head">
+								<th bgcolor="#FF6600" width="50"><span style="color:#000000;"><span style="font-size:14px;">方向</span></span></th>
+								<th bgcolor="#FF6600" style="padding:3px 0px" width="50"><span style="color:#000000;"><span style="font-size:14px;">車次</span></span></th>
+								<th bgcolor="#FF6600" width="120"><span style="color:#000000;"><span style="font-size:14px;">適用日</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台北</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">板橋</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">桃園</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">新竹</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台中</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">嘉義</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台南</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">左營</span></span></th>
+							</tr>
+							<tr>
+								<th bgcolor="#85CE1F" class="SD" rowspan="70"><span style="color:#000000;"><span style="font-size:14px;">南下</span></span></th>
+								<td style="padding:3px 0px">605</td>
+								<td>日</td>
+								<td>06:30</td>
+								<td>06:38</td>
+								<td>06:52</td>
+								<td>07:05</td>
+								<td>07:32</td>
+								<td>07:57</td>
+								<td>08:16</td>
+								<td>08:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">103</td>
+								<td bgcolor="#EEF7E6">日</td>
+								<td bgcolor="#EEF7E6">06:36</td>
+								<td bgcolor="#EEF7E6">06:44</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">07:28</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">08:12</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1615</td>
+								<td>一、四、五</td>
+								<td>07:48</td>
+								<td>07:56</td>
+								<td>08:09</td>
+								<td>08:22</td>
+								<td>08:50</td>
+								<td>09:14</td>
+								<td>09:33</td>
+								<td>09:48</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">115</td>
+								<td bgcolor="#EEF7E6">一</td>
+								<td bgcolor="#EEF7E6">07:54</td>
+								<td bgcolor="#EEF7E6">08:02</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">08:46</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">09:30</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1619</td>
+								<td>一</td>
+								<td>08:18</td>
+								<td>08:26</td>
+								<td>08:39</td>
+								<td>08:51</td>
+								<td>09:19</td>
+								<td>09:44</td>
+								<td>10:03</td>
+								<td>10:18</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">621</td>
+								<td bgcolor="#EEF7E6">一</td>
+								<td bgcolor="#EEF7E6">08:36</td>
+								<td bgcolor="#EEF7E6">08:44</td>
+								<td bgcolor="#EEF7E6">08:57</td>
+								<td bgcolor="#EEF7E6">09:10</td>
+								<td bgcolor="#EEF7E6">09:38</td>
+								<td bgcolor="#EEF7E6">10:02</td>
+								<td bgcolor="#EEF7E6">10:21</td>
+								<td bgcolor="#EEF7E6">10:36</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">123</td>
+								<td>一、日</td>
+								<td>08:54</td>
+								<td>09:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">625</td>
+								<td bgcolor="#EEF7E6">一</td>
+								<td bgcolor="#EEF7E6">09:00</td>
+								<td bgcolor="#EEF7E6">09:08</td>
+								<td bgcolor="#EEF7E6">09:21</td>
+								<td bgcolor="#EEF7E6">09:33</td>
+								<td bgcolor="#EEF7E6">10:01</td>
+								<td bgcolor="#EEF7E6">10:26</td>
+								<td bgcolor="#EEF7E6">10:45</td>
+								<td bgcolor="#EEF7E6">11:00</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">131</td>
+								<td>一～五、日</td>
+								<td>09:54</td>
+								<td>10:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">633</td>
+								<td bgcolor="#EEF7E6">一～五、日</td>
+								<td bgcolor="#EEF7E6">10:00</td>
+								<td bgcolor="#EEF7E6">10:08</td>
+								<td bgcolor="#EEF7E6">10:21</td>
+								<td bgcolor="#EEF7E6">10:33</td>
+								<td bgcolor="#EEF7E6">11:01</td>
+								<td bgcolor="#EEF7E6">11:26</td>
+								<td bgcolor="#EEF7E6">11:45</td>
+								<td bgcolor="#EEF7E6">12:00</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1635</td>
+								<td>六</td>
+								<td>10:18</td>
+								<td>10:26</td>
+								<td>10:39</td>
+								<td>10:51</td>
+								<td>11:19</td>
+								<td>11:44</td>
+								<td>12:03</td>
+								<td>12:18</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">637</td>
+								<td bgcolor="#EEF7E6">六</td>
+								<td bgcolor="#EEF7E6">10:36</td>
+								<td bgcolor="#EEF7E6">10:44</td>
+								<td bgcolor="#EEF7E6">10:57</td>
+								<td bgcolor="#EEF7E6">11:10</td>
+								<td bgcolor="#EEF7E6">11:38</td>
+								<td bgcolor="#EEF7E6">12:02</td>
+								<td bgcolor="#EEF7E6">12:21</td>
+								<td bgcolor="#EEF7E6">12:36</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">139</td>
+								<td>二～日</td>
+								<td>10:54</td>
+								<td>11:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">641</td>
+								<td bgcolor="#EEF7E6">一～日</td>
+								<td bgcolor="#EEF7E6">11:00</td>
+								<td bgcolor="#EEF7E6">11:08</td>
+								<td bgcolor="#EEF7E6">11:21</td>
+								<td bgcolor="#EEF7E6">11:33</td>
+								<td bgcolor="#EEF7E6">12:01</td>
+								<td bgcolor="#EEF7E6">12:26</td>
+								<td bgcolor="#EEF7E6">12:45</td>
+								<td bgcolor="#EEF7E6">13:00</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">143</td>
+								<td>日</td>
+								<td>11:30</td>
+								<td>11:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>13:06</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">645</td>
+								<td bgcolor="#EEF7E6">二、三、日</td>
+								<td bgcolor="#EEF7E6">11:36</td>
+								<td bgcolor="#EEF7E6">11:44</td>
+								<td bgcolor="#EEF7E6">11:57</td>
+								<td bgcolor="#EEF7E6">12:10</td>
+								<td bgcolor="#EEF7E6">12:38</td>
+								<td bgcolor="#EEF7E6">13:02</td>
+								<td bgcolor="#EEF7E6">13:21</td>
+								<td bgcolor="#EEF7E6">13:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">649</td>
+								<td>一、日</td>
+								<td>12:00</td>
+								<td>12:08</td>
+								<td>12:21</td>
+								<td>12:33</td>
+								<td>13:01</td>
+								<td>13:26</td>
+								<td>13:45</td>
+								<td>14:00</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">1155</td>
+								<td bgcolor="#EEF7E6">五</td>
+								<td bgcolor="#EEF7E6">12:54</td>
+								<td bgcolor="#EEF7E6">13:02</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">13:46</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">14:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">1523</td>
+								<td>日</td>
+								<td>16:48</td>
+								<td>16:56</td>
+								<td>17:09</td>
+								<td>17:22</td>
+								<td>17:49</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">1223</td>
+								<td bgcolor="#EEF7E6">六</td>
+								<td bgcolor="#EEF7E6">16:54</td>
+								<td bgcolor="#EEF7E6">17:02</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">17:46</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">18:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">1525</td>
+								<td>二～四</td>
+								<td>17:18</td>
+								<td>17:26</td>
+								<td>17:39</td>
+								<td>17:51</td>
+								<td>18:16</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">1527</td>
+								<td bgcolor="#EEF7E6">五</td>
+								<td bgcolor="#EEF7E6">17:48</td>
+								<td bgcolor="#EEF7E6">17:56</td>
+								<td bgcolor="#EEF7E6">18:09</td>
+								<td bgcolor="#EEF7E6">18:22</td>
+								<td bgcolor="#EEF7E6">18:49</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">231</td>
+								<td>一～四、六</td>
+								<td>17:54</td>
+								<td>18:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>18:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:30</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">733</td>
+								<td bgcolor="#EEF7E6">一～三</td>
+								<td bgcolor="#EEF7E6">18:00</td>
+								<td bgcolor="#EEF7E6">18:08</td>
+								<td bgcolor="#EEF7E6">18:21</td>
+								<td bgcolor="#EEF7E6">18:33</td>
+								<td bgcolor="#EEF7E6">19:01</td>
+								<td bgcolor="#EEF7E6">19:26</td>
+								<td bgcolor="#EEF7E6">19:45</td>
+								<td bgcolor="#EEF7E6">20:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">1233</td>
+								<td>日</td>
+								<td>18:12</td>
+								<td>18:20</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:04</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:48</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">1735</td>
+								<td bgcolor="#EEF7E6">日</td>
+								<td bgcolor="#EEF7E6">18:18</td>
+								<td bgcolor="#EEF7E6">18:26</td>
+								<td bgcolor="#EEF7E6">18:39</td>
+								<td bgcolor="#EEF7E6">18:51</td>
+								<td bgcolor="#EEF7E6">19:19</td>
+								<td bgcolor="#EEF7E6">19:44</td>
+								<td bgcolor="#EEF7E6">20:03</td>
+								<td bgcolor="#EEF7E6">20:18</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">1529</td>
+								<td>五</td>
+								<td>18:48</td>
+								<td>18:56</td>
+								<td>19:09</td>
+								<td>19:22</td>
+								<td>19:49</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">239</td>
+								<td bgcolor="#EEF7E6">二～四、六</td>
+								<td bgcolor="#EEF7E6">18:54</td>
+								<td bgcolor="#EEF7E6">19:02</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">19:46</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">20:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">741</td>
+								<td>二～四、六</td>
+								<td>19:00</td>
+								<td>19:08</td>
+								<td>19:21</td>
+								<td>19:33</td>
+								<td>20:01</td>
+								<td>20:26</td>
+								<td>20:47</td>
+								<td>21:00</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">1743</td>
+								<td bgcolor="#EEF7E6">日</td>
+								<td bgcolor="#EEF7E6">19:18</td>
+								<td bgcolor="#EEF7E6">19:26</td>
+								<td bgcolor="#EEF7E6">19:39</td>
+								<td bgcolor="#EEF7E6">19:51</td>
+								<td bgcolor="#EEF7E6">20:19</td>
+								<td bgcolor="#EEF7E6">20:44</td>
+								<td bgcolor="#EEF7E6">21:03</td>
+								<td bgcolor="#EEF7E6">21:18</td>
+							</tr>
+							<tr class="NDtd">
+								<td style="padding:3px 0px">1247</td>
+								<td>六</td>
+								<td>19:54</td>
+								<td>20:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>20:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:30</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">749</td>
+								<td bgcolor="#EEF7E6">六</td>
+								<td bgcolor="#EEF7E6">20:00</td>
+								<td bgcolor="#EEF7E6">20:08</td>
+								<td bgcolor="#EEF7E6">20:21</td>
+								<td bgcolor="#EEF7E6">20:33</td>
+								<td bgcolor="#EEF7E6">21:01</td>
+								<td bgcolor="#EEF7E6">21:26</td>
+								<td bgcolor="#EEF7E6">21:45</td>
+								<td bgcolor="#EEF7E6">22:00</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1751</td>
+								<td>六</td>
+								<td>20:18</td>
+								<td>20:26</td>
+								<td>20:39</td>
+								<td>20:51</td>
+								<td>21:19</td>
+								<td>21:44</td>
+								<td>22:03</td>
+								<td>22:18</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">255</td>
+								<td bgcolor="#EEF7E6">日</td>
+								<td bgcolor="#EEF7E6">20:54</td>
+								<td bgcolor="#EEF7E6">21:02</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">21:46</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">22:30</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">757</td>
+								<td>一、三、六</td>
+								<td>21:00</td>
+								<td>21:08</td>
+								<td>21:21</td>
+								<td>21:33</td>
+								<td>22:01</td>
+								<td>22:26</td>
+								<td>22:45</td>
+								<td>23:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">259</td>
+								<td bgcolor="#EEF7E6">一、三、六</td>
+								<td bgcolor="#EEF7E6">21:30</td>
+								<td bgcolor="#EEF7E6">21:38</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">22:22</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">─</td>
+								<td bgcolor="#EEF7E6">23:06</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">761</td>
+								<td>四</td>
+								<td>21:36</td>
+								<td>21:44</td>
+								<td>21:57</td>
+								<td>22:10</td>
+								<td>22:38</td>
+								<td>23:02</td>
+								<td>23:21</td>
+								<td>23:36</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">763</td>
+								<td bgcolor="#EEF7E6">五、六</td>
+								<td bgcolor="#EEF7E6">21:54</td>
+								<td bgcolor="#EEF7E6">22:02</td>
+								<td bgcolor="#EEF7E6">22:15</td>
+								<td bgcolor="#EEF7E6">22:27</td>
+								<td bgcolor="#EEF7E6">22:55</td>
+								<td bgcolor="#EEF7E6">23:20</td>
+								<td bgcolor="#EEF7E6">23:39</td>
+								<td bgcolor="#EEF7E6">23:54</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">399</td>
+								<td>五、六</td>
+								<td>22:12</td>
+								<td>─</td>
+								<td>22:31</td>
+								<td>─</td>
+								<td>23:04</td>
+								<td>23:28</td>
+								<td>23:46</td>
+								<td>23:59</td>
+							</tr>
+							<tr>
+								<td bgcolor="#EEF7E6" style="padding:3px 0px">541</td>
+								<td bgcolor="#EEF7E6">五～日</td>
+								<td bgcolor="#EEF7E6">22:30</td>
+								<td bgcolor="#EEF7E6">22:38</td>
+								<td bgcolor="#EEF7E6">22:52</td>
+								<td bgcolor="#EEF7E6">23:03</td>
+								<td bgcolor="#EEF7E6">23:30</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+								<td bgcolor="#EEF7E6">&nbsp;</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">545</td>
+								<td>五、六</td>
+								<td>23:00</td>
+								<td>23:08</td>
+								<td>23:22</td>
+								<td>23:33</td>
+								<td>23:59</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<table border="0" cellpadding="0" cellspacing="1" class="timetable" style="font-size:13px;" width="100%">
+						<caption style="display:none">指定7折車次表(北上)</caption>
+						<tbody>
+							<tr class="Head">
+								<th bgcolor="#FF6600" width="50"><span style="color:#000000;"><span style="font-size:14px;">方向</span></span></th>
+								<th bgcolor="#FF6600" style="padding:3px 0px" width="50"><span style="color:#000000;"><span style="font-size:14px;">車次</span></span></th>
+								<th bgcolor="#FF6600" width="120"><span style="color:#000000;"><span style="font-size:14px;">適用日</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">左營</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台南</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">嘉義</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台中</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">新竹</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">桃園</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">板橋</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台北</span></span></th>
+							</tr>
+							<tr>
+								<th bgcolor="#62BCEC" class="ND" rowspan="68"><span style="font-size:14px;">北上</span></th>
+								<td style="padding:3px 0px">502</td>
+								<td>二～五</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>06:30</td>
+								<td>06:57</td>
+								<td>07:09</td>
+								<td>07:23</td>
+								<td>07:30</td>
+							</tr>
+							<tr class="ND">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1508</td>
+								<td bgcolor="#E3F4FC">二</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">07:12</td>
+								<td bgcolor="#E3F4FC">07:39</td>
+								<td bgcolor="#E3F4FC">07:51</td>
+								<td bgcolor="#E3F4FC">08:05</td>
+								<td bgcolor="#E3F4FC">08:12</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">604</td>
+								<td>一</td>
+								<td>06:36</td>
+								<td>06:51</td>
+								<td>07:11</td>
+								<td>07:37</td>
+								<td>08:04</td>
+								<td>08:16</td>
+								<td>08:29</td>
+								<td>08:36</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1510</td>
+								<td bgcolor="#E3F4FC">一～六</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">07:48</td>
+								<td bgcolor="#E3F4FC">08:15</td>
+								<td bgcolor="#E3F4FC">08:27</td>
+								<td bgcolor="#E3F4FC">08:41</td>
+								<td bgcolor="#E3F4FC">08:48</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">608</td>
+								<td>日</td>
+								<td>07:00</td>
+								<td>07:15</td>
+								<td>07:36</td>
+								<td>08:01</td>
+								<td>08:28</td>
+								<td>08:40</td>
+								<td>08:53</td>
+								<td>09:00</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">110</td>
+								<td bgcolor="#E3F4FC">日</td>
+								<td bgcolor="#E3F4FC">07:30</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">08:15</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">08:58</td>
+								<td bgcolor="#E3F4FC">09:06</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">1512</td>
+								<td>一</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>08:19</td>
+								<td>08:46</td>
+								<td>08:58</td>
+								<td>09:11</td>
+								<td>09:18</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">612</td>
+								<td bgcolor="#E3F4FC">日</td>
+								<td bgcolor="#E3F4FC">07:36</td>
+								<td bgcolor="#E3F4FC">07:49</td>
+								<td bgcolor="#E3F4FC">08:09</td>
+								<td bgcolor="#E3F4FC">08:35</td>
+								<td bgcolor="#E3F4FC">09:03</td>
+								<td bgcolor="#E3F4FC">09:16</td>
+								<td bgcolor="#E3F4FC">09:29</td>
+								<td bgcolor="#E3F4FC">09:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">1618</td>
+								<td>六</td>
+								<td>08:18</td>
+								<td>08:33</td>
+								<td>08:54</td>
+								<td>09:19</td>
+								<td>09:46</td>
+								<td>09:58</td>
+								<td>10:11</td>
+								<td>10:18</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">118</td>
+								<td bgcolor="#E3F4FC">日</td>
+								<td bgcolor="#E3F4FC">08:30</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">09:15</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">09:58</td>
+								<td bgcolor="#E3F4FC">10:06</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">620</td>
+								<td>一～四</td>
+								<td>08:36</td>
+								<td>08:49</td>
+								<td>09:09</td>
+								<td>09:35</td>
+								<td>10:03</td>
+								<td>10:16</td>
+								<td>10:29</td>
+								<td>10:36</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">122</td>
+								<td bgcolor="#E3F4FC">一～五、日</td>
+								<td bgcolor="#E3F4FC">08:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">09:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">10:22</td>
+								<td bgcolor="#E3F4FC">10:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">126</td>
+								<td>一～五</td>
+								<td>09:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:58</td>
+								<td>11:06</td>
+							</tr>
+							<tr>
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">628</td>
+								<td bgcolor="#E3F4FC">二～五</td>
+								<td bgcolor="#E3F4FC">09:36</td>
+								<td bgcolor="#E3F4FC">09:49</td>
+								<td bgcolor="#E3F4FC">10:09</td>
+								<td bgcolor="#E3F4FC">10:35</td>
+								<td bgcolor="#E3F4FC">11:03</td>
+								<td bgcolor="#E3F4FC">11:16</td>
+								<td bgcolor="#E3F4FC">11:29</td>
+								<td bgcolor="#E3F4FC">11:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">130</td>
+								<td>一、五、日</td>
+								<td>09:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:22</td>
+								<td>11:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">632</td>
+								<td bgcolor="#E3F4FC">一、五</td>
+								<td bgcolor="#E3F4FC">10:00</td>
+								<td bgcolor="#E3F4FC">10:15</td>
+								<td bgcolor="#E3F4FC">10:36</td>
+								<td bgcolor="#E3F4FC">11:01</td>
+								<td bgcolor="#E3F4FC">11:28</td>
+								<td bgcolor="#E3F4FC">11:40</td>
+								<td bgcolor="#E3F4FC">11:53</td>
+								<td bgcolor="#E3F4FC">12:00</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">134</td>
+								<td>一、五</td>
+								<td>10:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:58</td>
+								<td>12:06</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">636</td>
+								<td bgcolor="#E3F4FC">日</td>
+								<td bgcolor="#E3F4FC">10:36</td>
+								<td bgcolor="#E3F4FC">10:49</td>
+								<td bgcolor="#E3F4FC">11:09</td>
+								<td bgcolor="#E3F4FC">11:35</td>
+								<td bgcolor="#E3F4FC">12:03</td>
+								<td bgcolor="#E3F4FC">12:16</td>
+								<td bgcolor="#E3F4FC">12:29</td>
+								<td bgcolor="#E3F4FC">12:36</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">138</td>
+								<td>二、三、日</td>
+								<td>10:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:22</td>
+								<td>12:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">640</td>
+								<td bgcolor="#E3F4FC">二～四、日</td>
+								<td bgcolor="#E3F4FC">11:00</td>
+								<td bgcolor="#E3F4FC">11:15</td>
+								<td bgcolor="#E3F4FC">11:36</td>
+								<td bgcolor="#E3F4FC">12:01</td>
+								<td bgcolor="#E3F4FC">12:28</td>
+								<td bgcolor="#E3F4FC">12:40</td>
+								<td bgcolor="#E3F4FC">12:53</td>
+								<td bgcolor="#E3F4FC">13:00</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">142</td>
+								<td>日</td>
+								<td>11:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:58</td>
+								<td>13:06</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">644</td>
+								<td bgcolor="#E3F4FC">日</td>
+								<td bgcolor="#E3F4FC">11:36</td>
+								<td bgcolor="#E3F4FC">11:49</td>
+								<td bgcolor="#E3F4FC">12:09</td>
+								<td bgcolor="#E3F4FC">12:35</td>
+								<td bgcolor="#E3F4FC">13:03</td>
+								<td bgcolor="#E3F4FC">13:16</td>
+								<td bgcolor="#E3F4FC">13:29</td>
+								<td bgcolor="#E3F4FC">13:36</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1154</td>
+								<td>六～日</td>
+								<td>12:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>13:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>14:22</td>
+								<td>14:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1206</td>
+								<td bgcolor="#E3F4FC">六</td>
+								<td bgcolor="#E3F4FC">14:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">15:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">16:22</td>
+								<td bgcolor="#E3F4FC">16:30</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1710</td>
+								<td>五</td>
+								<td>15:18</td>
+								<td>15:33</td>
+								<td>15:54</td>
+								<td>16:19</td>
+								<td>16:46</td>
+								<td>16:58</td>
+								<td>17:11</td>
+								<td>17:18</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1526</td>
+								<td bgcolor="#E3F4FC">三、四</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">16:52</td>
+								<td bgcolor="#E3F4FC">17:21</td>
+								<td bgcolor="#E3F4FC">17:34</td>
+								<td bgcolor="#E3F4FC">17:47</td>
+								<td bgcolor="#E3F4FC">17:54</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">1718</td>
+								<td>五</td>
+								<td>16:18</td>
+								<td>16:33</td>
+								<td>16:54</td>
+								<td>17:19</td>
+								<td>17:46</td>
+								<td>17:58</td>
+								<td>18:11</td>
+								<td>18:18</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1528</td>
+								<td bgcolor="#E3F4FC">五</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">&nbsp;</td>
+								<td bgcolor="#E3F4FC">17:48</td>
+								<td bgcolor="#E3F4FC">18:15</td>
+								<td bgcolor="#E3F4FC">18:27</td>
+								<td bgcolor="#E3F4FC">18:41</td>
+								<td bgcolor="#E3F4FC">18:48</td>
+							</tr>
+							<tr>
+								<td style="padding:3px 0px">728</td>
+								<td>六</td>
+								<td>17:36</td>
+								<td>17:49</td>
+								<td>18:09</td>
+								<td>18:35</td>
+								<td>19:03</td>
+								<td>19:16</td>
+								<td>19:29</td>
+								<td>19:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">230</td>
+								<td bgcolor="#E3F4FC">一～四、六</td>
+								<td bgcolor="#E3F4FC">17:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">18:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">19:22</td>
+								<td bgcolor="#E3F4FC">19:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">736</td>
+								<td>一～四</td>
+								<td>18:36</td>
+								<td>18:49</td>
+								<td>19:09</td>
+								<td>19:35</td>
+								<td>20:03</td>
+								<td>20:16</td>
+								<td>20:29</td>
+								<td>20:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">238</td>
+								<td bgcolor="#E3F4FC">四、六</td>
+								<td bgcolor="#E3F4FC">18:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">19:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">20:22</td>
+								<td bgcolor="#E3F4FC">20:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">740</td>
+								<td>一～四</td>
+								<td>19:00</td>
+								<td>19:15</td>
+								<td>19:36</td>
+								<td>20:01</td>
+								<td>20:28</td>
+								<td>20:40</td>
+								<td>20:53</td>
+								<td>21:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">1742</td>
+								<td bgcolor="#E3F4FC">五</td>
+								<td bgcolor="#E3F4FC">19:18</td>
+								<td bgcolor="#E3F4FC">19:33</td>
+								<td bgcolor="#E3F4FC">19:54</td>
+								<td bgcolor="#E3F4FC">20:19</td>
+								<td bgcolor="#E3F4FC">20:46</td>
+								<td bgcolor="#E3F4FC">20:58</td>
+								<td bgcolor="#E3F4FC">21:11</td>
+								<td bgcolor="#E3F4FC">21:18</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">744</td>
+								<td>六</td>
+								<td>19:36</td>
+								<td>19:49</td>
+								<td>20:09</td>
+								<td>20:35</td>
+								<td>21:03</td>
+								<td>21:16</td>
+								<td>21:29</td>
+								<td>21:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">246</td>
+								<td bgcolor="#E3F4FC">六</td>
+								<td bgcolor="#E3F4FC">19:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">20:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">21:22</td>
+								<td bgcolor="#E3F4FC">21:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">752</td>
+								<td>一</td>
+								<td>20:36</td>
+								<td>20:49</td>
+								<td>21:09</td>
+								<td>21:35</td>
+								<td>22:03</td>
+								<td>22:16</td>
+								<td>22:29</td>
+								<td>22:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">254</td>
+								<td bgcolor="#E3F4FC">一、五、六</td>
+								<td bgcolor="#E3F4FC">20:54</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">21:39</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">─</td>
+								<td bgcolor="#E3F4FC">22:22</td>
+								<td bgcolor="#E3F4FC">22:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">756</td>
+								<td>四～六</td>
+								<td>21:00</td>
+								<td>21:15</td>
+								<td>21:36</td>
+								<td>22:01</td>
+								<td>22:28</td>
+								<td>22:40</td>
+								<td>22:53</td>
+								<td>23:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td bgcolor="#E3F4FC" style="padding:3px 0px">760</td>
+								<td bgcolor="#E3F4FC">一</td>
+								<td bgcolor="#E3F4FC">21:36</td>
+								<td bgcolor="#E3F4FC">21:51</td>
+								<td bgcolor="#E3F4FC">22:12</td>
+								<td bgcolor="#E3F4FC">22:37</td>
+								<td bgcolor="#E3F4FC">23:04</td>
+								<td bgcolor="#E3F4FC">23:16</td>
+								<td bgcolor="#E3F4FC">23:29</td>
+								<td bgcolor="#E3F4FC">23:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td style="padding:3px 0px">762</td>
+								<td>日</td>
+								<td>21:54</td>
+								<td>22:09</td>
+								<td>22:30</td>
+								<td>22:55</td>
+								<td>23:22</td>
+								<td>23:34</td>
+								<td>23:47</td>
+								<td>23:54</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</table>
+
+
+
+
+		<!-- 11/28 - 12/1 -->
+		<table id= 'sscTable' style= 'display: none'>
+			<tr>
+				<td valign="top">
+					<table border="0" cellpadding="0" cellspacing="1" class="timetable" style="font-size:14px;" width="100%">
+						<caption>指定5折車次表-南下</caption>
+						<tbody>
+							<tr class="Head">
+								<th bgcolor="#FF6602" width="50"><span style="color:#000000;"><span style="font-size:14px;">方向</span></span></th>
+								<th bgcolor="#FF6602" height="25" width="50"><span style="color:#000000;"><span style="font-size:14px;">車次</span></span></th>
+								<th bgcolor="#FF6602" width="120"><span style="color:#000000;"><span style="font-size:14px;">適用日</span></span></th>
+								<th bgcolor="#FF6602" style="color:#000000;font-size:14px;">台北</th>
+								<th bgcolor="#FF6602" style="color:#000000;font-size:14px;">板橋</th>
+								<th bgcolor="#FF6602" style="color:#000000;font-size:14px;">桃園</th>
+								<th bgcolor="#FF6602" style="color:#000000;font-size:14px;">新竹</th>
+								<th bgcolor="#FF6602" style="color:#000000;font-size:14px;">台中</th>
+								<th bgcolor="#FF6602" style="color:#000000;font-size:14px;">嘉義</th>
+								<th bgcolor="#FF6602" style="color:#000000;font-size:14px;">台南</th>
+								<th bgcolor="#FF6602" style="color:#000000;font-size:14px;">左營</th>
+							</tr>
+							<tr class="NDtd">
+								<td bgcolor="#85CE1F" class="SD" rowspan="33"><span style="color:#000000;"><span style="font-size:14px;">南下</span></span></td>
+								<td>551</td>
+								<td>五~一</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>06:30</td>
+								<td>06:57</td>
+								<td>07:17</td>
+								<td>07:30</td>
+							</tr>
+							<tr>
+								<td>1505</td>
+								<td>五、一</td>
+								<td>07:18</td>
+								<td>07:26</td>
+								<td>07:39</td>
+								<td>07:51</td>
+								<td>08:16</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr class="NDtd">
+								<td>1529</td>
+								<td>一</td>
+								<td>18:48</td>
+								<td>18:56</td>
+								<td>19:09</td>
+								<td>19:22</td>
+								<td>19:49</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td>239</td>
+								<td>一</td>
+								<td>18:54</td>
+								<td>19:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>20:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td>741</td>
+								<td>一</td>
+								<td>19:00</td>
+								<td>19:08</td>
+								<td>19:21</td>
+								<td>19:33</td>
+								<td>20:01</td>
+								<td>20:26</td>
+								<td>20:47</td>
+								<td>21:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td>255</td>
+								<td>一</td>
+								<td>20:54</td>
+								<td>21:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>22:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td>761</td>
+								<td>一</td>
+								<td>21:36</td>
+								<td>21:44</td>
+								<td>21:57</td>
+								<td>22:10</td>
+								<td>22:38</td>
+								<td>23:02</td>
+								<td>23:21</td>
+								<td>23:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td>763</td>
+								<td>一</td>
+								<td>21:54</td>
+								<td>22:02</td>
+								<td>22:15</td>
+								<td>22:27</td>
+								<td>22:55</td>
+								<td>23:20</td>
+								<td>23:39</td>
+								<td>23:54</td>
+							</tr>
+							<tr class="NDtd">
+								<td>399</td>
+								<td>一</td>
+								<td>22:12</td>
+								<td>─</td>
+								<td>22:31</td>
+								<td>─</td>
+								<td>23:04</td>
+								<td>23:28</td>
+								<td>23:46</td>
+								<td>23:59</td>
+							</tr>
+							<tr class="NDtd">
+								<td>541</td>
+								<td>一</td>
+								<td>22:30</td>
+								<td>22:38</td>
+								<td>22:52</td>
+								<td>23:03</td>
+								<td>23:30</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr class="NDtd">
+								<td>545</td>
+								<td>日~一</td>
+								<td>23:00</td>
+								<td>23:08</td>
+								<td>23:22</td>
+								<td>23:33</td>
+								<td>23:59</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<table border="0" cellpadding="0" cellspacing="1" class="timetableB" style="font-size:14px;" width="100%">
+						<caption>指定5折車次表-北上</caption>
+						<tbody>
+							<tr class="Head">
+								<th bgcolor="#FF6602" width="50"><span style="color:#000000;"><span style="font-size:14px;">方向</span></span></th>
+								<th bgcolor="#FF6602" height="25" width="50"><span style="color:#000000;"><span style="font-size:14px;">車次</span></span></th>
+								<th bgcolor="#FF6602" width="120"><span style="color:#000000;"><span style="font-size:14px;">適用日</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">左營</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台南</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">嘉義</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台中</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">新竹</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">桃園</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">板橋</span></span></th>
+								<th bgcolor="#FF6602"><span style="color:#000000;"><span style="font-size:14px;">台北</span></span></th>
+							</tr>
+							<tr>
+								<td bgcolor="#62BCEC" class="ND" rowspan="16"><span style="color:#000000;"><span style="font-size:14px;">北上</span></span></td>
+								<td>502</td>
+								<td>日</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>06:30</td>
+								<td>06:57</td>
+								<td>07:09</td>
+								<td>07:23</td>
+								<td>07:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>506</td>
+								<td>日</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>07:00</td>
+								<td>07:27</td>
+								<td>07:39</td>
+								<td>07:53</td>
+								<td>08:00</td>
+							</tr>
+							<tr>
+								<td>604</td>
+								<td>日</td>
+								<td>06:36</td>
+								<td>06:51</td>
+								<td>07:11</td>
+								<td>07:37</td>
+								<td>08:04</td>
+								<td>08:16</td>
+								<td>08:29</td>
+								<td>08:36</td>
+							</tr>
+							<tr>
+								<td>608</td>
+								<td>日</td>
+								<td>07:00</td>
+								<td>07:15</td>
+								<td>07:36</td>
+								<td>08:01</td>
+								<td>08:28</td>
+								<td>08:40</td>
+								<td>08:53</td>
+								<td>09:00</td>
+							</tr>
+							<tr>
+								<td>762</td>
+								<td>一</td>
+								<td>21:54</td>
+								<td>22:09</td>
+								<td>22:30</td>
+								<td>22:55</td>
+								<td>23:22</td>
+								<td>23:34</td>
+								<td>23:47</td>
+								<td>23:54</td>
+							</tr>
+							<tr>
+								<td>334</td>
+								<td>一</td>
+								<td>22:12</td>
+								<td>22:25</td>
+								<td>22:45</td>
+								<td>23:10</td>
+								<td>─</td>
+								<td>─</td>
+								<td>23:53</td>
+								<td>23:59</td>
+							</tr>
+							<tr>
+								<td>596</td>
+								<td>五~一</td>
+								<td>23:00</td>
+								<td>23:15</td>
+								<td>23:35</td>
+								<td>23:59</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+					&nbsp;
+
+					<p style="font-size:18px; font-weight:bold;"><span style="color:#000000;"><span style="font-size:20px;">指定</span></span><strong><span style="color:#FF0000;"><span style="font-size:20px;">7</span></span></strong><span style="color:#000000;"><span style="font-size:20px;">折車次表</span></span></p>
+
+					<table border="0" cellpadding="0" cellspacing="1" class="timetable" style="font-size:13px;" width="100%">
+						<caption>指定7折車次表-南下</caption>
+						<tbody>
+							<tr class="Head">
+								<th bgcolor="#FF6600" width="50"><span style="color:#000000;"><span style="font-size:14px;">方向</span></span></th>
+								<th bgcolor="#FF6600" height="25" width="50"><span style="color:#000000;"><span style="font-size:14px;">車次</span></span></th>
+								<th bgcolor="#FF6600" width="120"><span style="color:#000000;"><span style="font-size:14px;">適用日</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台北</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">板橋</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">桃園</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">新竹</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台中</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">嘉義</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台南</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">左營</span></span></th>
+							</tr>
+							<tr>
+								<td bgcolor="#85CE1F" class="SD" rowspan="88"><span style="color:#000000;"><span style="font-size:14px;">南下</span></span></td>
+								<td>605</td>
+								<td>日</td>
+								<td>06:30</td>
+								<td>06:38</td>
+								<td>06:52</td>
+								<td>07:05</td>
+								<td>07:32</td>
+								<td>07:57</td>
+								<td>08:16</td>
+								<td>08:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td>103</td>
+								<td>日</td>
+								<td>06:36</td>
+								<td>06:44</td>
+								<td>─</td>
+								<td>─</td>
+								<td>07:28</td>
+								<td>─</td>
+								<td>─</td>
+								<td>08:12</td>
+							</tr>
+							<tr>
+								<td>609</td>
+								<td>日</td>
+								<td>07:00</td>
+								<td>07:08</td>
+								<td>07:21</td>
+								<td>07:33</td>
+								<td>08:01</td>
+								<td>08:26</td>
+								<td>08:45</td>
+								<td>09:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td>111</td>
+								<td>日</td>
+								<td>07:30</td>
+								<td>07:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>08:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:06</td>
+							</tr>
+							<tr>
+								<td>1615</td>
+								<td>五、一</td>
+								<td>07:48</td>
+								<td>07:56</td>
+								<td>08:09</td>
+								<td>08:22</td>
+								<td>08:50</td>
+								<td>09:14</td>
+								<td>09:33</td>
+								<td>09:48</td>
+							</tr>
+							<tr class="NDtd">
+								<td>115</td>
+								<td>日~一</td>
+								<td>07:54</td>
+								<td>08:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>08:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:30</td>
+							</tr>
+							<tr>
+								<td>1619</td>
+								<td>一</td>
+								<td>08:18</td>
+								<td>08:26</td>
+								<td>08:39</td>
+								<td>08:51</td>
+								<td>09:19</td>
+								<td>09:44</td>
+								<td>10:03</td>
+								<td>10:18</td>
+							</tr>
+							<tr class="NDtd">
+								<td>621</td>
+								<td>一</td>
+								<td>08:36</td>
+								<td>08:44</td>
+								<td>08:57</td>
+								<td>09:10</td>
+								<td>09:38</td>
+								<td>10:02</td>
+								<td>10:21</td>
+								<td>10:36</td>
+							</tr>
+							<tr>
+								<td>＊123</td>
+								<td>五</td>
+								<td>08:54</td>
+								<td>09:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td>1627</td>
+								<td>一</td>
+								<td>09:18</td>
+								<td>09:26</td>
+								<td>09:39</td>
+								<td>09:51</td>
+								<td>10:19</td>
+								<td>10:44</td>
+								<td>11:03</td>
+								<td>11:18</td>
+							</tr>
+							<tr>
+								<td>＊629</td>
+								<td>五</td>
+								<td>09:36</td>
+								<td>09:44</td>
+								<td>09:57</td>
+								<td>10:10</td>
+								<td>10:38</td>
+								<td>11:02</td>
+								<td>11:21</td>
+								<td>11:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td>629</td>
+								<td>一</td>
+								<td>09:36</td>
+								<td>09:44</td>
+								<td>09:57</td>
+								<td>10:10</td>
+								<td>10:38</td>
+								<td>11:02</td>
+								<td>11:21</td>
+								<td>11:36</td>
+							</tr>
+							<tr>
+								<td>＊131</td>
+								<td>五</td>
+								<td>09:54</td>
+								<td>10:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td>131</td>
+								<td>一</td>
+								<td>09:54</td>
+								<td>10:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:30</td>
+							</tr>
+							<tr>
+								<td>＊633</td>
+								<td>五</td>
+								<td>10:00</td>
+								<td>10:08</td>
+								<td>10:21</td>
+								<td>10:33</td>
+								<td>11:01</td>
+								<td>11:26</td>
+								<td>11:45</td>
+								<td>12:00</td>
+							</tr>
+							<tr>
+								<td>633</td>
+								<td>日~一</td>
+								<td>10:00</td>
+								<td>10:08</td>
+								<td>10:21</td>
+								<td>10:33</td>
+								<td>11:01</td>
+								<td>11:26</td>
+								<td>11:45</td>
+								<td>12:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td>1635</td>
+								<td>日</td>
+								<td>10:18</td>
+								<td>10:26</td>
+								<td>10:39</td>
+								<td>10:51</td>
+								<td>11:19</td>
+								<td>11:44</td>
+								<td>12:03</td>
+								<td>12:18</td>
+							</tr>
+							<tr>
+								<td>637</td>
+								<td>五</td>
+								<td>10:36</td>
+								<td>10:44</td>
+								<td>10:57</td>
+								<td>11:10</td>
+								<td>11:38</td>
+								<td>12:02</td>
+								<td>12:21</td>
+								<td>12:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td>139</td>
+								<td>五</td>
+								<td>10:54</td>
+								<td>11:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:30</td>
+							</tr>
+							<tr>
+								<td>＊139</td>
+								<td>一</td>
+								<td>10:54</td>
+								<td>11:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:30</td>
+							</tr>
+							<tr class="NDtd">
+								<td>641</td>
+								<td>一</td>
+								<td>11:00</td>
+								<td>11:08</td>
+								<td>11:21</td>
+								<td>11:33</td>
+								<td>12:01</td>
+								<td>12:26</td>
+								<td>12:45</td>
+								<td>13:00</td>
+							</tr>
+							<tr>
+								<td>＊143</td>
+								<td>六</td>
+								<td>11:30</td>
+								<td>11:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>13:06</td>
+							</tr>
+							<tr class="NDtd">
+								<td>143</td>
+								<td>日</td>
+								<td>11:30</td>
+								<td>11:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>13:06</td>
+							</tr>
+							<tr>
+								<td>＊645</td>
+								<td>六</td>
+								<td>11:36</td>
+								<td>11:44</td>
+								<td>11:57</td>
+								<td>12:10</td>
+								<td>12:38</td>
+								<td>13:02</td>
+								<td>13:21</td>
+								<td>13:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td>645</td>
+								<td>日</td>
+								<td>11:36</td>
+								<td>11:44</td>
+								<td>11:57</td>
+								<td>12:10</td>
+								<td>12:38</td>
+								<td>13:02</td>
+								<td>13:21</td>
+								<td>13:36</td>
+							</tr>
+							<tr>
+								<td>649</td>
+								<td>日~一</td>
+								<td>12:00</td>
+								<td>12:08</td>
+								<td>12:21</td>
+								<td>12:33</td>
+								<td>13:01</td>
+								<td>13:26</td>
+								<td>13:45</td>
+								<td>14:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td>151</td>
+								<td>日</td>
+								<td>12:30</td>
+								<td>12:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>13:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>14:06</td>
+							</tr>
+							<tr>
+								<td>653</td>
+								<td>日</td>
+								<td>12:36</td>
+								<td>12:44</td>
+								<td>12:57</td>
+								<td>13:10</td>
+								<td>13:38</td>
+								<td>14:02</td>
+								<td>14:21</td>
+								<td>14:36</td>
+							</tr>
+							<tr class="NDtd">
+								<td>＊1155</td>
+								<td>五</td>
+								<td>12:54</td>
+								<td>13:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>13:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>14:30</td>
+							</tr>
+							<tr>
+								<td>657</td>
+								<td>日</td>
+								<td>13:00</td>
+								<td>13:08</td>
+								<td>13:21</td>
+								<td>13:33</td>
+								<td>14:01</td>
+								<td>14:26</td>
+								<td>14:45</td>
+								<td>15:00</td>
+							</tr>
+							<tr>
+								<td>159</td>
+								<td>日</td>
+								<td>13:30</td>
+								<td>13:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>14:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>15:06</td>
+							</tr>
+							<tr>
+								<td>＊661</td>
+								<td>六</td>
+								<td>13:36</td>
+								<td>13:44</td>
+								<td>13:57</td>
+								<td>14:10</td>
+								<td>14:38</td>
+								<td>15:02</td>
+								<td>15:21</td>
+								<td>15:36</td>
+							</tr>
+							<tr>
+								<td>1163</td>
+								<td>日</td>
+								<td>13:54</td>
+								<td>14:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>14:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>15:30</td>
+							</tr>
+							<tr>
+								<td>＊1521</td>
+								<td>五</td>
+								<td>15:18</td>
+								<td>15:26</td>
+								<td>15:39</td>
+								<td>15:51</td>
+								<td>16:16</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td>＊1723</td>
+								<td>五</td>
+								<td>16:48</td>
+								<td>16:56</td>
+								<td>17:09</td>
+								<td>17:22</td>
+								<td>17:50</td>
+								<td>18:14</td>
+								<td>18:33</td>
+								<td>18:48</td>
+							</tr>
+							<tr>
+								<td>1525</td>
+								<td>一</td>
+								<td>17:18</td>
+								<td>17:26</td>
+								<td>17:39</td>
+								<td>17:51</td>
+								<td>18:16</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td>＊231</td>
+								<td>六</td>
+								<td>17:54</td>
+								<td>18:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>18:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:30</td>
+							</tr>
+							<tr>
+								<td>231</td>
+								<td>一</td>
+								<td>17:54</td>
+								<td>18:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>18:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:30</td>
+							</tr>
+							<tr>
+								<td>733</td>
+								<td>一</td>
+								<td>18:00</td>
+								<td>18:08</td>
+								<td>18:21</td>
+								<td>18:33</td>
+								<td>19:01</td>
+								<td>19:26</td>
+								<td>19:45</td>
+								<td>20:00</td>
+							</tr>
+							<tr class="NDtd">
+								<td>1233</td>
+								<td>日</td>
+								<td>18:12</td>
+								<td>18:20</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:04</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:48</td>
+							</tr>
+							<tr>
+								<td>1735</td>
+								<td>日</td>
+								<td>18:18</td>
+								<td>18:26</td>
+								<td>18:39</td>
+								<td>18:51</td>
+								<td>19:19</td>
+								<td>19:44</td>
+								<td>20:03</td>
+								<td>20:18</td>
+							</tr>
+							<tr>
+								<td>239</td>
+								<td>六</td>
+								<td>18:54</td>
+								<td>19:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>20:30</td>
+							</tr>
+							<tr>
+								<td>741</td>
+								<td>六</td>
+								<td>19:00</td>
+								<td>19:08</td>
+								<td>19:21</td>
+								<td>19:33</td>
+								<td>20:01</td>
+								<td>20:26</td>
+								<td>20:47</td>
+								<td>21:00</td>
+							</tr>
+							<tr>
+								<td>243</td>
+								<td>六</td>
+								<td>19:30</td>
+								<td>19:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>20:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:06</td>
+							</tr>
+							<tr>
+								<td>745</td>
+								<td>六</td>
+								<td>19:36</td>
+								<td>19:44</td>
+								<td>19:57</td>
+								<td>20:10</td>
+								<td>20:38</td>
+								<td>21:02</td>
+								<td>21:21</td>
+								<td>21:36</td>
+							</tr>
+							<tr>
+								<td>1247</td>
+								<td>六</td>
+								<td>19:54</td>
+								<td>20:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>20:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:30</td>
+							</tr>
+							<tr>
+								<td>＊749</td>
+								<td>六</td>
+								<td>20:00</td>
+								<td>20:08</td>
+								<td>20:21</td>
+								<td>20:33</td>
+								<td>21:01</td>
+								<td>21:26</td>
+								<td>21:45</td>
+								<td>22:00</td>
+							</tr>
+							<tr>
+								<td>＊1751</td>
+								<td>六</td>
+								<td>20:18</td>
+								<td>20:26</td>
+								<td>20:39</td>
+								<td>20:51</td>
+								<td>21:19</td>
+								<td>21:44</td>
+								<td>22:03</td>
+								<td>22:18</td>
+							</tr>
+							<tr>
+								<td>251</td>
+								<td>六</td>
+								<td>20:30</td>
+								<td>20:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>22:06</td>
+							</tr>
+							<tr>
+								<td>＊753</td>
+								<td>一</td>
+								<td>20:36</td>
+								<td>20:44</td>
+								<td>20:57</td>
+								<td>21:10</td>
+								<td>21:38</td>
+								<td>22:02</td>
+								<td>22:21</td>
+								<td>22:36</td>
+							</tr>
+							<tr>
+								<td>255</td>
+								<td>日</td>
+								<td>20:54</td>
+								<td>21:02</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:46</td>
+								<td>─</td>
+								<td>─</td>
+								<td>22:30</td>
+							</tr>
+							<tr>
+								<td>757</td>
+								<td>六、一</td>
+								<td>21:00</td>
+								<td>21:08</td>
+								<td>21:21</td>
+								<td>21:33</td>
+								<td>22:01</td>
+								<td>22:26</td>
+								<td>22:45</td>
+								<td>23:00</td>
+							</tr>
+							<tr>
+								<td>259</td>
+								<td>六、一</td>
+								<td>21:30</td>
+								<td>21:38</td>
+								<td>─</td>
+								<td>─</td>
+								<td>22:22</td>
+								<td>─</td>
+								<td>─</td>
+								<td>23:06</td>
+							</tr>
+							<tr>
+								<td>＊761</td>
+								<td>六</td>
+								<td>21:36</td>
+								<td>21:44</td>
+								<td>21:57</td>
+								<td>22:10</td>
+								<td>22:38</td>
+								<td>23:02</td>
+								<td>23:21</td>
+								<td>23:36</td>
+							</tr>
+							<tr>
+								<td>763</td>
+								<td>六~日</td>
+								<td>21:54</td>
+								<td>22:02</td>
+								<td>22:15</td>
+								<td>22:27</td>
+								<td>22:55</td>
+								<td>23:20</td>
+								<td>23:39</td>
+								<td>23:54</td>
+							</tr>
+							<tr>
+								<td>399</td>
+								<td>六</td>
+								<td>22:12</td>
+								<td>─</td>
+								<td>22:31</td>
+								<td>─</td>
+								<td>23:04</td>
+								<td>23:28</td>
+								<td>23:46</td>
+								<td>23:59</td>
+							</tr>
+							<tr>
+								<td>1539</td>
+								<td>五</td>
+								<td>22:18</td>
+								<td>22:26</td>
+								<td>22:39</td>
+								<td>22:51</td>
+								<td>23:16</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td>541</td>
+								<td>五~日</td>
+								<td>22:30</td>
+								<td>22:38</td>
+								<td>22:52</td>
+								<td>23:03</td>
+								<td>23:30</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td>545</td>
+								<td>五~六</td>
+								<td>23:00</td>
+								<td>23:08</td>
+								<td>23:22</td>
+								<td>23:33</td>
+								<td>23:59</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<table border="0" cellpadding="0" cellspacing="1" class="timetableB" style="font-size:13px;" width="100%">
+						<caption>指定7折車次表-北上</caption>
+						<tbody>
+							<tr class="Head">
+								<th bgcolor="#FF6600" width="50"><span style="color:#000000;"><span style="font-size:14px;">方向</span></span></th>
+								<th bgcolor="#FF6600" height="25" width="50"><span style="color:#000000;"><span style="font-size:14px;">車次</span></span></th>
+								<th bgcolor="#FF6600" width="120"><span style="color:#000000;"><span style="font-size:14px;">適用日</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">左營</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台南</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">嘉義</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台中</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">新竹</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">桃園</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">板橋</span></span></th>
+								<th bgcolor="#FF6600"><span style="color:#000000;"><span style="font-size:14px;">台北</span></span></th>
+							</tr>
+							<tr>
+								<td bgcolor="#62BCEC" class="ND" rowspan="79"><span style="font-size:14px;">北上</span></td>
+								<td>502</td>
+								<td>五~六</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>06:30</td>
+								<td>06:57</td>
+								<td>07:09</td>
+								<td>07:23</td>
+								<td>07:30</td>
+							</tr>
+							<tr class="ND">
+								<td>506</td>
+								<td>五~六</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>07:00</td>
+								<td>07:27</td>
+								<td>07:39</td>
+								<td>07:53</td>
+								<td>08:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>1508</td>
+								<td>五</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>07:12</td>
+								<td>07:39</td>
+								<td>07:51</td>
+								<td>08:05</td>
+								<td>08:12</td>
+							</tr>
+							<tr>
+								<td>1540</td>
+								<td>一</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>07:24</td>
+								<td>07:52</td>
+								<td>08:05</td>
+								<td>08:17</td>
+								<td>08:24</td>
+							</tr>
+							<tr class="SDtd">
+								<td>＊302</td>
+								<td>日</td>
+								<td>06:30</td>
+								<td>06:43</td>
+								<td>07:03</td>
+								<td>07:28</td>
+								<td>─</td>
+								<td>─</td>
+								<td>08:11</td>
+								<td>08:18</td>
+							</tr>
+							<tr>
+								<td>604</td>
+								<td>六、一</td>
+								<td>06:36</td>
+								<td>06:51</td>
+								<td>07:11</td>
+								<td>07:37</td>
+								<td>08:04</td>
+								<td>08:16</td>
+								<td>08:29</td>
+								<td>08:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td>1510</td>
+								<td>五~六</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>07:48</td>
+								<td>08:15</td>
+								<td>08:27</td>
+								<td>08:41</td>
+								<td>08:48</td>
+							</tr>
+							<tr>
+								<td>＊608</td>
+								<td>六</td>
+								<td>07:00</td>
+								<td>07:15</td>
+								<td>07:36</td>
+								<td>08:01</td>
+								<td>08:28</td>
+								<td>08:40</td>
+								<td>08:53</td>
+								<td>09:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>110</td>
+								<td>六~日</td>
+								<td>07:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>08:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>08:58</td>
+								<td>09:06</td>
+							</tr>
+							<tr>
+								<td>1512</td>
+								<td>五</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>08:19</td>
+								<td>08:46</td>
+								<td>08:58</td>
+								<td>09:11</td>
+								<td>09:18</td>
+							</tr>
+							<tr class="SDtd">
+								<td>612</td>
+								<td>日</td>
+								<td>07:36</td>
+								<td>07:49</td>
+								<td>08:09</td>
+								<td>08:35</td>
+								<td>09:03</td>
+								<td>09:16</td>
+								<td>09:29</td>
+								<td>09:36</td>
+							</tr>
+							<tr>
+								<td>＊616</td>
+								<td>日</td>
+								<td>08:00</td>
+								<td>08:15</td>
+								<td>08:36</td>
+								<td>09:01</td>
+								<td>09:28</td>
+								<td>09:40</td>
+								<td>09:53</td>
+								<td>10:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>1618</td>
+								<td>六</td>
+								<td>08:18</td>
+								<td>08:33</td>
+								<td>08:54</td>
+								<td>09:19</td>
+								<td>09:46</td>
+								<td>09:58</td>
+								<td>10:11</td>
+								<td>10:18</td>
+							</tr>
+							<tr>
+								<td>＊118</td>
+								<td>五</td>
+								<td>08:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:58</td>
+								<td>10:06</td>
+							</tr>
+							<tr class="SDtd">
+								<td>118</td>
+								<td>日</td>
+								<td>08:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:58</td>
+								<td>10:06</td>
+							</tr>
+							<tr class="SDtd">
+								<td>620</td>
+								<td>五、日</td>
+								<td>08:36</td>
+								<td>08:49</td>
+								<td>09:09</td>
+								<td>09:35</td>
+								<td>10:03</td>
+								<td>10:16</td>
+								<td>10:29</td>
+								<td>10:36</td>
+							</tr>
+							<tr>
+								<td>122</td>
+								<td>五、日~一</td>
+								<td>08:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>09:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:22</td>
+								<td>10:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>126</td>
+								<td>五</td>
+								<td>09:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:58</td>
+								<td>11:06</td>
+							</tr>
+							<tr>
+								<td>1516</td>
+								<td>六</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>10:19</td>
+								<td>10:46</td>
+								<td>10:58</td>
+								<td>11:11</td>
+								<td>11:18</td>
+							</tr>
+							<tr class="SDtd">
+								<td>628</td>
+								<td>五</td>
+								<td>09:36</td>
+								<td>09:49</td>
+								<td>10:09</td>
+								<td>10:35</td>
+								<td>11:03</td>
+								<td>11:16</td>
+								<td>11:29</td>
+								<td>11:36</td>
+							</tr>
+							<tr>
+								<td>130</td>
+								<td>五、一</td>
+								<td>09:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:22</td>
+								<td>11:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>＊130</td>
+								<td>日</td>
+								<td>09:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>10:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:22</td>
+								<td>11:30</td>
+							</tr>
+							<tr>
+								<td>632</td>
+								<td>一</td>
+								<td>10:00</td>
+								<td>10:15</td>
+								<td>10:36</td>
+								<td>11:01</td>
+								<td>11:28</td>
+								<td>11:40</td>
+								<td>11:53</td>
+								<td>12:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>134</td>
+								<td>五</td>
+								<td>10:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:58</td>
+								<td>12:06</td>
+							</tr>
+							<tr>
+								<td>＊134</td>
+								<td>日</td>
+								<td>10:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:58</td>
+								<td>12:06</td>
+							</tr>
+							<tr class="SDtd">
+								<td>636</td>
+								<td>五</td>
+								<td>10:36</td>
+								<td>10:49</td>
+								<td>11:09</td>
+								<td>11:35</td>
+								<td>12:03</td>
+								<td>12:16</td>
+								<td>12:29</td>
+								<td>12:36</td>
+							</tr>
+							<tr>
+								<td>＊636</td>
+								<td>日</td>
+								<td>10:36</td>
+								<td>10:49</td>
+								<td>11:09</td>
+								<td>11:35</td>
+								<td>12:03</td>
+								<td>12:16</td>
+								<td>12:29</td>
+								<td>12:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td>138</td>
+								<td>五、日~一</td>
+								<td>10:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>11:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>12:22</td>
+								<td>12:30</td>
+							</tr>
+							<tr>
+								<td>640</td>
+								<td>五、日~一</td>
+								<td>11:00</td>
+								<td>11:15</td>
+								<td>11:36</td>
+								<td>12:01</td>
+								<td>12:28</td>
+								<td>12:40</td>
+								<td>12:53</td>
+								<td>13:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>＊648</td>
+								<td>日</td>
+								<td>12:00</td>
+								<td>12:15</td>
+								<td>12:36</td>
+								<td>13:01</td>
+								<td>13:28</td>
+								<td>13:40</td>
+								<td>13:53</td>
+								<td>14:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>＊660</td>
+								<td>六</td>
+								<td>13:36</td>
+								<td>13:49</td>
+								<td>14:09</td>
+								<td>14:35</td>
+								<td>15:03</td>
+								<td>15:16</td>
+								<td>15:29</td>
+								<td>15:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td>1162</td>
+								<td>六</td>
+								<td>13:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>14:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>15:22</td>
+								<td>15:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>1214</td>
+								<td>六</td>
+								<td>15:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>16:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>17:22</td>
+								<td>17:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>1526</td>
+								<td>一</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>16:52</td>
+								<td>17:21</td>
+								<td>17:34</td>
+								<td>17:47</td>
+								<td>17:54</td>
+							</tr>
+							<tr class="SDtd">
+								<td>1528</td>
+								<td>五</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>17:48</td>
+								<td>18:15</td>
+								<td>18:27</td>
+								<td>18:41</td>
+								<td>18:48</td>
+							</tr>
+							<tr class="SDtd">
+								<td>728</td>
+								<td>六</td>
+								<td>17:36</td>
+								<td>17:49</td>
+								<td>18:09</td>
+								<td>18:35</td>
+								<td>19:03</td>
+								<td>19:16</td>
+								<td>19:29</td>
+								<td>19:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td>230</td>
+								<td>六、一</td>
+								<td>17:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>18:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:22</td>
+								<td>19:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>1530</td>
+								<td>五</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>18:49</td>
+								<td>19:15</td>
+								<td>19:27</td>
+								<td>19:40</td>
+								<td>19:48</td>
+							</tr>
+							<tr class="SDtd">
+								<td>736</td>
+								<td>一</td>
+								<td>18:36</td>
+								<td>18:49</td>
+								<td>19:09</td>
+								<td>19:35</td>
+								<td>20:03</td>
+								<td>20:16</td>
+								<td>20:29</td>
+								<td>20:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td>238</td>
+								<td>六、一</td>
+								<td>18:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>19:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>20:22</td>
+								<td>20:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>740</td>
+								<td>一</td>
+								<td>19:00</td>
+								<td>19:15</td>
+								<td>19:36</td>
+								<td>20:01</td>
+								<td>20:28</td>
+								<td>20:40</td>
+								<td>20:53</td>
+								<td>21:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>744</td>
+								<td>一</td>
+								<td>19:36</td>
+								<td>19:49</td>
+								<td>20:09</td>
+								<td>20:35</td>
+								<td>21:03</td>
+								<td>21:16</td>
+								<td>21:29</td>
+								<td>21:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td>246</td>
+								<td>一</td>
+								<td>19:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>20:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:22</td>
+								<td>21:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>748</td>
+								<td>一</td>
+								<td>20:00</td>
+								<td>20:15</td>
+								<td>20:36</td>
+								<td>21:01</td>
+								<td>21:28</td>
+								<td>21:40</td>
+								<td>21:53</td>
+								<td>22:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>＊250</td>
+								<td>一</td>
+								<td>20:30</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:15</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:58</td>
+								<td>22:06</td>
+							</tr>
+							<tr class="SDtd">
+								<td>＊752</td>
+								<td>一</td>
+								<td>20:36</td>
+								<td>20:49</td>
+								<td>21:09</td>
+								<td>21:35</td>
+								<td>22:03</td>
+								<td>22:16</td>
+								<td>22:29</td>
+								<td>22:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td>254</td>
+								<td>一</td>
+								<td>20:54</td>
+								<td>─</td>
+								<td>─</td>
+								<td>21:39</td>
+								<td>─</td>
+								<td>─</td>
+								<td>22:22</td>
+								<td>22:30</td>
+							</tr>
+							<tr class="SDtd">
+								<td>756</td>
+								<td>一</td>
+								<td>21:00</td>
+								<td>21:15</td>
+								<td>21:36</td>
+								<td>22:01</td>
+								<td>22:28</td>
+								<td>22:40</td>
+								<td>22:53</td>
+								<td>23:00</td>
+							</tr>
+							<tr class="SDtd">
+								<td>760</td>
+								<td>一</td>
+								<td>21:36</td>
+								<td>21:51</td>
+								<td>22:12</td>
+								<td>22:37</td>
+								<td>23:04</td>
+								<td>23:16</td>
+								<td>23:29</td>
+								<td>23:36</td>
+							</tr>
+							<tr class="SDtd">
+								<td>762</td>
+								<td>五~六</td>
+								<td>21:54</td>
+								<td>22:09</td>
+								<td>22:30</td>
+								<td>22:55</td>
+								<td>23:22</td>
+								<td>23:34</td>
+								<td>23:47</td>
+								<td>23:54</td>
+							</tr>
+							<tr class="SDtd">
+								<td>334</td>
+								<td>五~六</td>
+								<td>22:12</td>
+								<td>22:25</td>
+								<td>22:45</td>
+								<td>23:10</td>
+								<td>─</td>
+								<td>─</td>
+								<td>23:53</td>
+								<td>23:59</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
